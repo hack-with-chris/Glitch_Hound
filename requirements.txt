@@ -1,0 +1,14 @@
+customtkinter>=5.2.2
+pymongo[srv]>=4.8
+python-dotenv>=1.0
+requests>=2.32
+aiohttp>=3.10
+reportlab>=4.2
+dnspython>=2.6.1
+beautifulsoup4>=4.12.0
+
+# Only needed if you switch PAYMENT_GATEWAY_MODE to "easebuzz" in .env:
+# Easebuzz>=1.0.4
+
+# Only needed if you switch PAYMENT_GATEWAY_MODE to "razorpay" in .env:
+# razorpay>=1.4.2

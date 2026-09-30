@@ -1,0 +1,345 @@
+Glitch Hound - App Overview
+
+1. What this app is
+Glitch Hound is a Windows desktop cybersecurity application built for non-technical users. It helps users understand website and server security issues in a simple, visual, and explainable way.
+
+The app combines:
+- Website vulnerability auditing
+- Network port scanning
+- DNS email security checking
+- Risk scoring and prediction
+- Digital House visualization
+- Security remediation file generation
+- Scan history and reporting
+- Authentication and subscription flow
+- Admin monitoring tools
+
+It is designed to turn technical security findings into practical and understandable results.
+
+2. Main entry point
+Entry file:
+- main.py
+
+The app starts from main.py and creates the GUI application from the App class in:
+- gui/app.py
+
+3. Core architecture
+The project has these main parts:
+
+- gui/ -> user interface pages and app navigation
+- scanner/ -> security scanning and analysis logic
+- auth/ -> login, registration, password hashing, OTP logic
+- database/ -> MongoDB access and scan storage
+- utils/ -> report generation and support utilities
+- payment/ -> mock/real payment gateways
+- config.py -> app configuration, subscription plans, environment variables
+
+4. Authentication and user flow
+Authentication is handled by:
+- auth/auth_manager.py
+
+Features:
+- User registration
+- Email verification via OTP
+- Login and logout
+- Password reset flow
+- Role-based access (user/admin)
+- Password hashing with PBKDF2-HMAC-SHA256
+
+The program stores users, scan records, reports, OTP metadata, and account information in MongoDB.
+
+5. Database layer
+Database code is in:
+- database/db.py
+
+It is connected to MongoDB Atlas and stores:
+- users
+- scan history
+- reports
+- payment info
+- subscriptions
+- admin tracking data
+
+Configuration values including MongoDB URI and app setup are in:
+- config.py
+
+6. Network scanning features
+The network scanner is in:
+- scanner/network_scanner.py
+
+It performs:
+- Hostname resolution
+- Reachability test
+- TCP port scans
+- Service discovery
+- Banner reading
+
+It checks common ports and looks for open services such as:
+- HTTP/HTTPS
+- SSH
+- FTP
+- SMTP
+- DNS
+- RDP
+- MySQL
+- PostgreSQL
+- MongoDB
+- Redis
+- SMB
+- VNC
+
+This is defensive reconnaissance only. It does not exploit services.
+
+7. Website vulnerability audit
+The website audit engine is in:
+- scanner/vuln_scanner.py
+
+It checks:
+- Missing security headers
+- SSL certificate validity and expiry
+- Cookie flags like Secure and HttpOnly
+- Exposed sensitive paths and files
+- Directory listing exposure
+- Server version disclosure
+- Final URL and HTTP status
+
+Security headers checked include:
+- Strict-Transport-Security
+- Content-Security-Policy
+- X-Content-Type-Options
+- X-Frame-Options
+- Referrer-Policy
+- Permissions-Policy
+
+Sensitive paths checked include:
+- /.env
+- /.git/config
+- /.git/HEAD
+- /backup.zip
+- /wp-config.php.bak
+- /server-status
+- /phpinfo.php
+- /admin
+
+The app grades each website audit from A to F based on how many issues are found.
+
+8. DNS email trust checker
+The email security checker is in:
+- scanner/email_trust_scanner.py
+
+It validates DNS-based email trust by checking:
+- SPF TXT records
+- DMARC TXT records
+
+It returns a result dictionary like:
+- domain
+- status
+- error
+- spf_record
+- dmarc_record
+- spf_details
+- dmarc_details
+
+This is shown in the scan results page under a section named:
+- DNS EMAIL TRUST SHIELD
+
+9. Digital House Visualizer
+The app explains technical findings using an analogy of a house.
+
+This is implemented in:
+- scanner/risk_predictor.py
+- gui/scan_page.py
+
+Mapping:
+- Invalid SSL = unlocked front door
+- Risky open port = open window
+- Directory listing = open blinds
+- Missing security headers = roof leak
+- Unsafe cookies = weak locks
+- Exposed paths = open rooms
+
+This is designed to make the security assessment understandable for non-technical people.
+
+10. Armor file generation
+The app can generate a remediation configuration file after a website scan.
+
+This feature is in:
+- scanner/risk_predictor.py
+- gui/scan_page.py
+
+It can generate config snippets for:
+- Apache .htaccess
+- IIS config
+- Text-based remediation files
+
+The generated config includes:
+- Security headers
+- HTTPS redirect
+- Directory listing prevention
+- Hidden file protection options
+
+11. Third-party script scanning
+The backend module is in:
+- scanner/third_party_script_scanner.py
+
+This feature:
+- fetches a page
+- parses script tags
+- identifies external script sources
+- detects third-party script domains
+- calculates low/medium/high risk based on count
+
+It is useful for detecting ad, analytics, or CDN dependencies that may increase privacy or supply-chain risk.
+
+12. Risk prediction
+The app includes a prediction feature in:
+- scanner/risk_predictor.py
+- gui/risk_prediction_page.py
+
+It uses:
+- historical scan data
+- CVE-based values
+- EPSS information from FIRST.org
+- open port analysis
+- missing security header analysis
+
+The system gives an explainable risk score and classifies severity as:
+- Low
+- Moderate
+- High
+- Critical
+
+This is not a full AI model; it is a logic-based baseline built on historical findings and public CVE risk feeds.
+
+13. History and report generation
+The history system stores prior scans and allows the user to review them later.
+
+Files include:
+- gui/history_page.py
+- utils/report_generator.py
+
+Reports can be exported in formats such as:
+- PDF
+- CSV
+- JSON
+
+Depending on the plan, some exports may be restricted.
+
+14. Security chatbot
+The app includes a chatbot-like assistant page intended to help explain scan results in simpler language.
+
+Files:
+- gui/security_chatbot_page.py
+- scanner/impact_knowledge.py
+
+It provides plain-English explanations of:
+- what the vulnerability is
+- why it happens
+- what data may be at risk
+- expected business impact
+- possible fixes
+
+15. Subscription system
+Plan limits and feature gating are configured in:
+- config.py
+
+Plans:
+- Free
+- Pro
+
+Free plan limitations:
+- fewer monthly scans
+- smaller port range
+- basic website checks
+- no report downloads
+
+Pro plan benefits:
+- unlimited scans
+- more complete audit checks
+- larger port range
+- report downloads
+- richer scan capabilities
+
+Payment integrations exist in:
+- payment/
+
+Supported modes:
+- mock
+- razorpay
+- easebuzz
+
+By default, the project uses mock payment mode for testing and demos.
+
+16. Admin panel
+Admin tools exist for user and system management.
+
+Files include:
+- gui/admin_dashboard_page.py
+- gui/admin_users_page.py
+
+Admin features include:
+- monitoring of platform usage
+- user oversight
+- risk overview
+- administrative management tasks
+
+17. UI pages
+Primary pages in the app include:
+- dashboard
+- scan
+- history
+- risk_prediction
+- security_chatbot
+- profile
+- subscription
+
+The app uses customtkinter for the desktop interface and has a custom dark theme and green/red status colors for alerts.
+
+18. Build and packaging
+Build instructions are in:
+- BUILD.md
+
+The app is packaged with PyInstaller using:
+- glitchhound.spec
+
+This creates a Windows .exe that can run standalone.
+
+19. Dependencies
+The project depends on:
+- customtkinter
+- pymongo
+- python-dotenv
+- requests
+- aiohttp
+- reportlab
+- dnspython
+- beautifulsoup4
+
+The dependency list is in:
+- requirements.txt
+
+20. Important limitations
+Glitch Hound is designed for ethical and authorized security testing.
+
+It is not intended to:
+- perform active exploitation
+- brute force credentials
+- run SQL injection or XSS payloads
+- attack systems without permission
+- replace a professional pentest for large or sensitive environments
+
+It is a scanning and explanation tool with strong focus on readability for non-expert users.
+
+21. Overall purpose
+The main goal of Glitch Hound is to make cyber security accessible.
+
+It reduces the gap between:
+- technical vulnerability findings
+- real-world consequences
+- user-friendly explanations
+- actionable fixes
+
+It does this by combining scanning, visualization, explanation, and remediation.
+
+22. Best summary in one sentence
+Glitch Hound is a desktop security auditing and education app that scans websites and servers, explains the issues in plain English, shows them as a digital house, and helps users take action before a real attack happens.
